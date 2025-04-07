@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Royal Corgi Parade</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: linear-gradient(to top, #87ceeb, #ffffff);
+      font-family: 'Georgia', serif;
+    }
+
+    .corgi {
+      position: absolute;
+      bottom: 0;
+      width: 100px;
+      animation: runAcross 10s linear;
+    }
+
+    @keyframes runAcross {
+      0% {
+        left: -150px;
+      }
+      100% {
+        left: 100%;
+      }
+    }
+
+    .queen {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 120px;
+      z-index: 10;
+    }
+
+    #play-music {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: white;
+      border: 2px solid black;
+      border-radius: 10px;
+      z-index: 100;
+      cursor: pointer;
+      display: none;
+    }
+
+    #countdown-container {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #f3e5ab;
+      border: 3px solid #444;
+      padding: 10px 20px;
+      border-radius: 20px;
+      z-index: 99;
+      text-align: center;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    }
+
+    #countdown-container h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    #countdown {
+      font-size: 24px;
+      font-weight: bold;
+      color: #2c2c2c;
+    }
+  </style>
+</head>
+<body>
+  <!-- Royal Countdown Timer -->
+  <div id="countdown-container">
+    <h2>Until the Grand Corgination 👑</h2>
+    <div id="countdown">Loading...</div>
+  </div>
+
+  <!-- Queen image -->
+  <img src="queen.png" class="queen" alt="The Queen">
+
+  <!-- Audio -->
+  <audio id="bark-sound" src="bark.mp3" preload="auto"></audio>
+  <audio id="bg-music" src="music.mp3" preload="auto" loop></audio>
+
+  <!-- Play music fallback button -->
+  <button id="play-music">Play Music 🎵</button>
+
+  <script>
+    const totalCorgis = 5;
+    const barkSound = document.getElementById('bark-sound');
+    const bgMusic = document.getElementById('bg-music');
+    const playBtn = document.getElementById('play-music');
+
+    // Music autoplay
+    window.addEventListener('load', () => {
+      bgMusic.volume = 0.4;
+      bgMusic.play().catch(() => {
+        playBtn.style.display = 'block';
+      });
+    });
+
+    playBtn.addEventListener('click', () => {
+      bgMusic.play();
+      playBtn.style.display = 'none';
+    });
+
+    function spawnCorgi() {
+      const corgiNum = Math.floor(Math.random() * totalCorgis) + 1;
+      const corgi = document.createElement('img');
+      corgi.src = `corgi${corgiNum}.gif`;
+      corgi.className = 'corgi';
+      corgi.style.bottom = `${Math.random() * 80}px`;
+      corgi.style.animationDuration = `${6 + Math.random() * 4}s`;
+      document.body.appendChild(corgi);
+
+      if (Math.random() < 0.5) {
+        barkSound.currentTime = 0;
+        barkSound.play();
+      }
+
+      setTimeout(() => corgi.remove(), 10000);
+    }
+
+    setInterval(spawnCorgi, 2000);
+
+    // Countdown logic
+    const countdownEl = document.getElementById('countdown');
+    const targetDate = new Date('2024-04-11T03:59:00Z'); // April 10, 11:59 PM EST (which is 03:59 UTC on April 11)
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = targetDate - now;
+
+      if (diff <= 0) {
+        countdownEl.innerText = "🎉 It's time for the Corgination! 🎉";
+        return;
+      }
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      countdownEl.innerText = `${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown(); // Initial call
+  </script>
+</body>
+</html>
